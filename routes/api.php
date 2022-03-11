@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\TripController;
+use App\Models\Trip;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/trips', [TripController::class, 'getAllTripsFilteredByStartEndStations']);
-
+Route::post('/book', [TripController::class, 'bookTrip']);

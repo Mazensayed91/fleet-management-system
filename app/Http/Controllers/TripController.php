@@ -61,6 +61,13 @@ class TripController extends Controller
             
         });
         
+
+        // handle edge cases
+        // handle no trips found
+        if(count($trips_filtered_with_multiple_segments) == 0){
+            return response()->json(['error' => 'No trips found'], 404);
+        }
+
         // format available trips response
         $available_trips = array();
         foreach($trips_filtered_with_multiple_segments as $trip_segments){
@@ -71,6 +78,7 @@ class TripController extends Controller
 
             $available_trips[] = [
                 'trip_id' => $trip_segments[0]->trip_id,
+                'bus_id' => Trip::where('id', $trip_segments[0]->trip_id)->first()->bus_id,
                 'start_station' => $start_station_name,
                 'end_station' => $end_station_name,
                 'available_seats' => $trip_segments[0]->available_seats,
@@ -79,5 +87,24 @@ class TripController extends Controller
         return response()->json($available_trips);    
     }
 
+    public function bookTrip(Request $request){
+        $available_trips = $this->getAllTripsFilteredByStartEndStations($request);
+        if($available_trips->getStatusCode() == 404){
+            return response()->json(['error' => 'No trips found'], 404);
+        }
+        $trip = $available_trips->getData()[0];
 
+        $trip_segments = CrossOverStation::where('trip_id', $trip -> trip_id)->get();
+        // check available seats
+        foreach($trip_segments as $trip_segment){
+            if($trip_segment->available_seats == 0){
+                return response()->json(['error' => 'No available seats'], 404);
+            }
+        }
+        foreach($trip_segments as $trip_segment){
+            $trip_segment->available_seats = $trip_segment->available_seats - 1;
+            $trip_segment->save();
+        }
+        return response()->json(['success' => 'Trip booked successfully'], 200);
+    }
 }
