@@ -19,7 +19,6 @@ return new class extends Migration
             $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('start_station_id');
             $table->unsignedBigInteger('end_station_id');
-            $table->unsignedBigInteger('bus_id');
 
             $table->integer('station_order');
             $table->integer('available_seats');
