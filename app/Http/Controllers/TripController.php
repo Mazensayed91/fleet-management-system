@@ -99,16 +99,19 @@ class TripController extends Controller
         $trip_segments = CrossOverStation::where('trip_id', $trip -> trip_id)->get();
         // check available seats
         foreach($trip_segments as $trip_segment){
-            if($trip_segment->available_seats == 0){
-                return response()->json(['error' => 'No available seats'], 404);
-            }
+            $station_order = $trip_segment->station_order;
+            if($station_order >= $trip->start_trip_order && $station_order <= $trip->end_trip_order){
+                if($trip_segment->available_seats == 0){
+                    return response()->json(['error' => 'No available seats'], 404);
+                }
+        }
         }
 
         // decrement only the segments in the range
 
         foreach($trip_segments as $trip_segment){
             $station_order = $trip_segment->station_order;
-            if($station_order >= $trip->start_trip_order && $station_order <= $trip->end_trip_order){
+            if($station_order >= $trip->start_trip_order && $station_order < $trip->end_trip_order){
                 $trip_segment->available_seats = $trip_segment->available_seats - 1;
                 $trip_segment->save();
             }
