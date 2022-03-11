@@ -4,26 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\Trip;
 use App\Models\Station;
+use App\Models\CrossOverStation;
+
 use App\Http\Requests\StoreTripRequest;
 use App\Http\Requests\UpdateTripRequest;
-use App\Models\CrossOverStation;
 use Illuminate\Http\Request;
+
+use Exception;
 
 
 class TripController extends Controller
 {
-    public function getAllTrips(Request $request){
+    public function getAllTripsFilteredByStartEndStations(Request $request){
         
-        // get start and end station ids
-        $start_station_id = Station::where('station_name', $request->start_station)->first()->id;
-        $end_station_id = Station::where('station_name', $request->end_station)->first()->id;
-        
+        // get start and end station ids and handle not found station
+        try{
+            $start_station_id = Station::where('station_name', $request->start_station)->first()->id;
+            $end_station_id = Station::where('station_name', $request->end_station)->first()->id;
+        }
+        catch(Exception $e){
+            return response()->json(['error' => 'No such station'], 404);
+        }
+
         // get all trips that start from the start station or end at the end station
         $trips_filtered_by_start_end_stations = CrossOverStation::where(function($query) use($start_station_id, $end_station_id){
             $query->where('start_station_id', '=', $start_station_id)->orWhere('end_station_id', '=', $end_station_id);
         })->get();
 
-        // filter trips that contains only the start station or end station
+        // group segments by trip id
         $trips_filtered = array();
 
         foreach($trips_filtered_by_start_end_stations as $trip_segment)
@@ -34,8 +42,7 @@ class TripController extends Controller
         // filter trips_filtered by trips that have more than one segment and has available seats and start order
         $trips_filtered_with_multiple_segments = array();
         array_filter($trips_filtered, function($trip_segments) use(&$trips_filtered_with_multiple_segments, $start_station_id, $end_station_id){
-            // $start_station_order = -1;
-            // $end_station_order = -1;
+
             foreach($trip_segments as $trip_segment){
                 if($trip_segment -> start_station_id == $start_station_id){
                     $start_station_order = $trip_segment->station_order;
@@ -43,10 +50,6 @@ class TripController extends Controller
                 if($trip_segment -> end_station_id == $end_station_id){
                     $end_station_order = $trip_segment->station_order;
                 }
-                // // to filter segments outside the range
-                // if($start_station_id == -1 && $end_station_id == -1){
-                //     unset($trip_segments[$trip_segment->id]);
-                // }
             }
             if(isset($start_station_order) && isset($end_station_order)){
                 if($start_station_order <= $end_station_order){
@@ -57,7 +60,24 @@ class TripController extends Controller
             }
             
         });
+        
+        // format available trips response
+        $available_trips = array();
+        foreach($trips_filtered_with_multiple_segments as $trip_segments){
+            $start_station_trip_id = Trip::where('id', $trip_segments[0]->trip_id)->first()->start_station_id;
+            $end_station_trip_id = Trip::where('id', $trip_segments[0]->trip_id)->first()->end_station_id;
+            $start_station_name = Station::find($start_station_trip_id)->station_name;
+            $end_station_name = Station::find($end_station_trip_id)->station_name;
 
-        return response()->json($trips_filtered_with_multiple_segments);    
+            $available_trips[] = [
+                'trip_id' => $trip_segments[0]->trip_id,
+                'start_station' => $start_station_name,
+                'end_station' => $end_station_name,
+                'available_seats' => $trip_segments[0]->available_seats,
+            ];
+        }
+        return response()->json($available_trips);    
     }
+
+
 }

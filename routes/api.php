@@ -20,4 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/trips', [TripController::class, 'getAllTrips']);
+Route::get('/trips', [TripController::class, 'getAllTripsFilteredByStartEndStations']);
+
