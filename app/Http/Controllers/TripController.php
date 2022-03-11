@@ -23,7 +23,7 @@ class TripController extends Controller
             $end_station_id = Station::where('station_name', $request->end_station)->first()->id;
         }
         catch(Exception $e){
-            return response()->json(['error' => 'No such station'], 404);
+            return response()->json(['error' => '404', 'message' => 'Station not found'], 404);
         }
 
         // get all trips that start from the start station or end at the end station
@@ -65,7 +65,7 @@ class TripController extends Controller
         // handle edge cases
         // handle no trips found
         if(count($trips_filtered_with_multiple_segments) == 0){
-            return response()->json(['error' => 'No trips found'], 404);
+            return response()->json(['error' => '404', 'message' => 'No trips found'], 404);
         }
 
         // format available trips response
@@ -92,15 +92,18 @@ class TripController extends Controller
     public function bookTrip(Request $request){
         $available_trips = $this->getAllTripsFilteredByStartEndStations($request);
         if($available_trips->getStatusCode() == 404){
-            return response()->json(['error' => 'No trips found'], 404);
+            return response()->json(['error' => '404', 'message' => 'No trips found'], 404);
         }
-        $trip = $available_trips->getData()[0];
+        
+        $trip = array_column($available_trips->getData(), null, 'trip_id')[$request->trip_id] ?? -1;
+        //$trip = $available_trips->getData()[0];
 
         $trip_segments = CrossOverStation::where('trip_id', $trip -> trip_id)->get();
+
         // check available seats
         foreach($trip_segments as $trip_segment){
             $station_order = $trip_segment->station_order;
-            if($station_order >= $trip->start_trip_order && $station_order <= $trip->end_trip_order){
+            if($station_order >= $trip->start_trip_order && $station_order < $trip->end_trip_order){
                 if($trip_segment->available_seats == 0){
                     return response()->json(['error' => 'No available seats'], 404);
                 }
