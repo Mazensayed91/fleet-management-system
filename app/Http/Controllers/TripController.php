@@ -82,6 +82,8 @@ class TripController extends Controller
                 'start_station' => $start_station_name,
                 'end_station' => $end_station_name,
                 'available_seats' => $trip_segments[0]->available_seats,
+                'start_trip_order' => $trip_segments[0]->station_order,
+                'end_trip_order' => $trip_segments[count($trip_segments) - 1]->station_order + 1,
             ];
         }
         return response()->json($available_trips);    
@@ -101,9 +103,16 @@ class TripController extends Controller
                 return response()->json(['error' => 'No available seats'], 404);
             }
         }
+
+        // decrement only the segments in the range
+
         foreach($trip_segments as $trip_segment){
-            $trip_segment->available_seats = $trip_segment->available_seats - 1;
-            $trip_segment->save();
+            $station_order = $trip_segment->station_order;
+            if($station_order >= $trip->start_trip_order && $station_order <= $trip->end_trip_order){
+                $trip_segment->available_seats = $trip_segment->available_seats - 1;
+                $trip_segment->save();
+            }
+            
         }
         return response()->json(['success' => 'Trip booked successfully'], 200);
     }
