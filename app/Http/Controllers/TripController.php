@@ -34,7 +34,8 @@ class TripController extends Controller
         // filter trips_filtered by trips that have more than one segment and has available seats and start order
         $trips_filtered_with_multiple_segments = array();
         array_filter($trips_filtered, function($trip_segments) use(&$trips_filtered_with_multiple_segments, $start_station_id, $end_station_id){
-            
+            // $start_station_order = -1;
+            // $end_station_order = -1;
             foreach($trip_segments as $trip_segment){
                 if($trip_segment -> start_station_id == $start_station_id){
                     $start_station_order = $trip_segment->station_order;
@@ -42,10 +43,14 @@ class TripController extends Controller
                 if($trip_segment -> end_station_id == $end_station_id){
                     $end_station_order = $trip_segment->station_order;
                 }
+                // // to filter segments outside the range
+                // if($start_station_id == -1 && $end_station_id == -1){
+                //     unset($trip_segments[$trip_segment->id]);
+                // }
             }
             if(isset($start_station_order) && isset($end_station_order)){
-                if($start_station_order < $end_station_order){
-                    if(count($trip_segments) > 1 && $trip_segments[0]->available_seats > 0){
+                if($start_station_order <= $end_station_order){
+                    if((count($trip_segments) > 1 || ($trip_segment->start_station_id == $start_station_id && $trip_segment->end_station_id == $end_station_id)) && $trip_segments[0]->available_seats > 0){
                         $trips_filtered_with_multiple_segments[] = $trip_segments;
                     }
                 }
