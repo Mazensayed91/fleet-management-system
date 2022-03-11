@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
         
-            $table->unsignedBigInteger('start_station_id');
-            $table->unsignedBigInteger('end_station_id');
-            $table->unsignedBigInteger('bus_id');
+            $table-> foreignId('start_station_id') -> references('id') -> on('stations') -> onDelete('restrict') -> onUpdate('restrict');
+            $table-> foreignId('end_station_id') -> references('id') -> on('stations') -> onDelete('restrict') -> onUpdate('restrict');
+            $table-> foreignId('bus_id') -> references('id') -> on('buses') -> onDelete('restrict') -> onUpdate('restrict');
 
             $table->timestamps();
         });

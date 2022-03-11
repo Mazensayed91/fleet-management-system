@@ -62,7 +62,7 @@ class TripsSeeder extends Seeder
                 }
             }
         }
-
+        
     public function fill_trip_table(){
         for($i = 0; $i < count($this->stations_btn_start_end_station); $i++) {
             DB::table('trips')->insert([

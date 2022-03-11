@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('cross_over_stations', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('trip_id');
-            $table->unsignedBigInteger('start_station_id');
-            $table->unsignedBigInteger('end_station_id');
+            $table->foreignId('trip_id') -> references('id') -> on('trips') -> onDelete('restrict') -> onUpdate('restrict');
+            $table->foreignId('start_station_id') -> references('id') -> on('stations') -> onDelete('restrict') -> onUpdate('restrict');
+            $table->foreignId('end_station_id') -> references('id') -> on('stations') -> onDelete('restrict') -> onUpdate('restrict');
 
             $table->integer('station_order');
             $table->integer('available_seats');

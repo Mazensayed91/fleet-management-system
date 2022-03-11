@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use PDO;
 
 class Trip extends Model
 {
@@ -13,19 +14,18 @@ class Trip extends Model
     
     public function bus(){
 
-        return $this->hasOne(Bus::class);
+        return $this->belongsTo(Bus::class);
         
     }
 
-    public function station(){
+    public function startStation(){
 
-        return $this->hasMany(Station::class);
+        return $this->belongsTo(Station::class, 'start_station_id');
         
     }
+    public function endStation(){
 
-    public function cross_over_station(){
-
-        return $this->hasMany(CrossOverStation::class) -> orderBy('order', 'ASC');
+        return $this->belongsTo(Station::class, 'end_station_id');
         
     }
 }
