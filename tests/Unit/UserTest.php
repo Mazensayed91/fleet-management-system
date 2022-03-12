@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Support\Str;
 
+
 class UserTest extends TestCase
 {
     public function test_register_happy_scenario()
