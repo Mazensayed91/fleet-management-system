@@ -222,6 +222,8 @@ I believe that unit tests are a one of the best ways to document the project. To
 
 Unit testing in this project is seprated into 3 main test specs to test (Authentication - Fetching Trips - Booking)
 
+To run all unit tests: ```php artisan test```
+
 
 #### Authentication Unit Testing
 | UnitTest                        |                  Description                 | Expected Return |
@@ -251,3 +253,9 @@ Unit testing in this project is seprated into 3 main test specs to test (Authent
 
 ## Database
 ![Untitled Workspace (1)](https://user-images.githubusercontent.com/54520113/157956845-f10a1bf3-cc61-4803-b578-fdd85e4adf08.png)
+
+## What Next?
+
+- Add dates to trips
+- Add details to the busses like driver name and estimated time using this bus
+- Deploy the application
