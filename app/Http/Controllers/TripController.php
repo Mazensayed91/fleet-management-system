@@ -94,7 +94,11 @@ class TripController extends Controller
         if($available_trips->getStatusCode() == 404){
             return response()->json(['error' => '404', 'message' => 'No trips found'], 404);
         }
-        
+        $trip_id_exists = array_key_exists($request->trip_id, $available_trips->getData());
+        if(!$trip_id_exists){
+            return response()->json(['error' => '404', 'message' => 'No trips found with this id, fetch trips to find a suitable trip id'], 404);
+        }
+
         $trip = array_column($available_trips->getData(), null, 'trip_id')[$request->trip_id] ?? -1;
         //$trip = $available_trips->getData()[0];
 

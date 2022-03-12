@@ -12,7 +12,6 @@ class TripTest extends TestCase
 {
     public function test_fetching_trips_without_authentication()
     {
-        
 
         $response = $this->withHeaders([
             'Accept' => 'application/json',])->get('/api/trips',[
@@ -43,7 +42,7 @@ class TripTest extends TestCase
         
         $response->assertStatus(200);
     }
-    
+
     public function test_fetching_trips_non_existing_stations()
     {
         // get user using user class
