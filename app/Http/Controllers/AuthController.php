@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     public function register(Request $request){
+
+        $user = User::where('email', $request->email)->first();
+        if($user){
+            return response()->json([
+                'message' => 'Email already exists'
+            ], Response::HTTP_NOT_FOUND);
+        }
         $fields = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
