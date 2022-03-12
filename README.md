@@ -1,4 +1,4 @@
-# Rakabny
+# Rakabny <img src="https://user-images.githubusercontent.com/54520113/158013941-aeb34c8f-b3f1-47d7-b789-5be3a8ae00ca.png" width="50" height="30">
 
 Rakabny is a fleet management system that aims to make it easy for each person to book his trip seat!
 
@@ -199,6 +199,36 @@ Example errors the user may incounter using Rakabny:
         "status": 200
     }
    ```
+## Unit Testing
+I believe that unit tests are a one of the best ways to document the project. To learn what functionality is provided by one module or another, developers can refer to unit tests to get a basic picture of the logic of the module and the system as a whole. 
+
+Unit testing in this project is seprated into 3 main test specs to test (Authentication - Fetching Trips - Booking)
+
+
+#### Authentication Unit Testing
+| UnitTest                        |                  Description                 | Expected Return |
+| ------------------------------- | ---------------------------------------------|-----------------|
+|test_register_happy_scenario     | Tests creating account with valid data       |     201         |
+|test_register_existing_email     | Tests creating account with duplicate data   |     404         |
+
+#### Booking Unit Testing
+| UnitTest                           |                  Description                 | Expected Return |
+| ---------------------------------- | ---------------------------------------------|-----------------|
+|test_booking_without_authentication | Tests booking without authentication         |     401         |
+|test_booking_happy_scenario         | Tests fetching trips using Bearer token      |     200         |
+|test_booking_no_available_seet      | Tests fetching trips without available seets |     404         |
+|test_booking_non_existing_trip      | Tests booking with a non existing stations   |     404         |
+|test_booking_non_existing_trip_id   | Tests booking with a non existing trip id    |     404         |
+
+
+#### Trip Fetching Unit Testing
+
+| UnitTest                                  |                  Description                     | Expected Return |
+| ------------------------------------------| -------------------------------------------------|-----------------|
+|test_fetching_trips_without_authentication | Tests fetching trips without authentication      |     401         |
+|test_fetching_trips_happy_scenario         | Tests fetching trips using Bearer token          |     200         |
+|test_fetching_trips_non_existing_stations  | Tests fetching trips with a non exsiting stations|     404         |
+
 
 
 ## Database
