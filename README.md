@@ -6,6 +6,8 @@ Rakabny is a fleet management system that aims to make it easy for each person t
 - Language: PHP 8.1.2
 - Frameworks: Laravel 9
 - DB: SQLite
+- Authentication: Sanctum
+- Unit-Testing: PHPUnit
 
 ## API Reference
 
@@ -28,17 +30,31 @@ Errors are returned as JSON and are formatted in the following manner:<br>
         "message": "Station not found"
     }
 ```
+
+```
+    {
+        "error": "404",
+        "message": "No trips found with this id, fetch trips to find a suitable trip id"
+    }
+```
+```
+    {
+        "error": "401"
+        "message": "Unauthenticated."
+    }
+```
 Example errors the user may incounter using Rakabny:
 
 * 400 – bad request
 * 404 – resource not found
+* 401 – Unauthenticated
 
 ### Endpoints
 
 #### GET /api/trips
 
 * General: Returns a list trips that fall in a given range.
-* Sample: `curl http://127.0.0.1:8000/trips`<br>
+* Sample: `curl http://localhost:8000/trips`<br>
 * Message body:
 ```
          {
@@ -46,6 +62,14 @@ Example errors the user may incounter using Rakabny:
 	        "end_station": "Asyut"
         } 
 ```
+* Message Header:
+  ```
+         {
+	        "Authorization": your bearer token,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+         }
+  ```
 * Return:
 ```
         [
@@ -82,8 +106,8 @@ Example errors the user may incounter using Rakabny:
 #### POST /api/book
 
 * General:
-  * Sample: `curl http://127.0.0.1:8000/book`<br>
-  * Message body:
+* Sample: `curl http://localhost:8000/book`<br>
+* Message body:
   ```
          {
 	        "start_station": "Cairo",
@@ -91,10 +115,88 @@ Example errors the user may incounter using Rakabny:
             "trip_id": 4
         }
   ```
-  * Return:
+* Message Header:
+  ```
+         {
+	        "Authorization": your bearer token,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+         }
+  ```
+* Return:
   ```
     {
 	    "success": "Trip booked successfully"
+    }
+   ```
+
+#### POST /api/register
+
+* General:
+* Sample: `curl http://localhost:8000/register`<br>
+* Message body:
+  ```
+         {
+            "name": "Mazen",
+            "email": "mazen99@gmail.com",
+            "password": "mazen@gmail.com",
+            "password_confirmation": "mazen@gmail.com"
+         }
+  ```
+* Return:
+  ```
+        {
+            "success": "Trip booked successfully"
+        }
+   ```
+ * If user already exists:
+   ```
+       {
+            "message": "Email already exists"
+       }
+   ```
+   
+#### POST /api/login
+
+* General:
+* Sample: `curl http://localhost:8000/loign`<br>
+* Message body:
+  ```
+        {
+            "email": "mazen@gmail.com",
+            "password": "mazen@gmail.com"
+        }
+  ```
+* Return:
+  ```
+    {
+        "user": {
+            "id": 1,
+            "name": "Mazen",
+            "email": "mazen@gmail.com",
+            "email_verified_at": null,
+            "created_at": "2022-03-11T22:29:14.000000Z",
+            "updated_at": "2022-03-11T22:29:14.000000Z"
+	    },
+	    "token": a bearer token
+    }
+   ```
+   
+#### POST /api/logout
+
+* General:
+* Sample: `curl http://localhost:8000/book`<br>
+* Message Header:
+  ```
+         {
+	        "Authorization": your bearer token
+         }
+  ```
+* Return:
+  ```
+    {
+        "message": "Logged out",
+        "status": 200
     }
    ```
 
