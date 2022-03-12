@@ -17,6 +17,9 @@ class TripsSeeder extends Seeder
      // array of trips, each trip defined by an array of stations (station id) 
     private $stations_btn_start_end_station = [
     [
+        7,8
+    ],
+    [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10
     ],
     [
@@ -49,14 +52,18 @@ class TripsSeeder extends Seeder
     // using stations_btn_start_end_station create function to fill crossover table
     public function fill_crossover_table()
     {
+        $available_seets = 0;
         for($i = 0; $i < count($this->stations_btn_start_end_station); $i++) {
             for($j = 0; $j < count($this->stations_btn_start_end_station[$i])-1; $j++) {
+                if($i == 1) {
+                    $available_seets = 12;
+                }
                     DB::table('cross_over_stations')->insert([
                         'trip_id' => $i+1,
                         'start_station_id' => $this->stations_btn_start_end_station[$i][$j],
                         'end_station_id' => $this->stations_btn_start_end_station[$i][$j+1],
                         'station_order' => $j+1,
-                        'available_seats' => 12,
+                        'available_seats' => $available_seets,
                         'created_at' => date('Y-m-d H:i:s'),
                         ]);
                 }
