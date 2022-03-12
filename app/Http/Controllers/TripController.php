@@ -76,12 +76,20 @@ class TripController extends Controller
             $start_station_name = Station::find($start_station_trip_id)->station_name;
             $end_station_name = Station::find($end_station_trip_id)->station_name;
 
+            // available seats is the minimum available seats of all segments
+            $available_seats = min(array_map(function($trip_segment){
+                return $trip_segment->available_seats;
+            }, $trip_segments));
+            // ignore trips with 0 available seats
+            if($available_seats == 0){
+                continue;
+            }
             $available_trips[] = [
                 'trip_id' => $trip_segments[0]->trip_id,
                 'bus_id' => Trip::where('id', $trip_segments[0]->trip_id)->first()->bus_id,
                 'start_station' => $start_station_name,
                 'end_station' => $end_station_name,
-                'available_seats' => $trip_segments[0]->available_seats,
+                'available_seats' => $available_seats,
                 'start_trip_order' => $trip_segments[0]->station_order,
                 'end_trip_order' => $trip_segments[count($trip_segments) - 1]->station_order + 1,
             ];
