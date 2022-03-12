@@ -103,14 +103,18 @@ class TripController extends Controller
             return response()->json(['error' => '404', 'message' => 'No trips found'], 404);
         }
 
+        
         // replacing default keys with trip ids to make it easy to find the trip
         $array_index = 0;
+        
         $available_trips_data = $available_trips->getData();
+        $available_trips_data_temp = array();
+       
         foreach($available_trips_data as $available_trip){
-            $available_trips_data[$available_trip->trip_id]= $available_trip;
-            unset($available_trips_data[$array_index]);
-            $array_index++;   
+            $available_trips_data_temp[$available_trip->trip_id]= $available_trip;
+            $array_index++;
         }
+        $available_trips_data = $available_trips_data_temp;
 
         // check if the trip id is available
         $trip_id_exists = array_key_exists($request->trip_id, $available_trips_data);
