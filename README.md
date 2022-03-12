@@ -9,6 +9,24 @@ Rakabny is a fleet management system that aims to make it easy for each person t
 - Authentication: Sanctum
 - Unit-Testing: PHPUnit
 
+## Prerequisites
+
+- PHP 8
+- Composer
+
+## Getting Started
+
+- Clone the repo ```https://github.com/Mazensayed91/fleet-management-system.git```
+- cd fleet-management-system
+- Install composer packages ```composer install```
+- Install NPM packages ```npm install```
+- Create database.sqlite file inside the database folder
+- php artisan migrate  
+- php artisan db:seed --class=DatabaseSeeder
+- php artisan serve
+
+
+
 ## API Reference
 
 ### Getting Started
