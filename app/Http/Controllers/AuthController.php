@@ -17,19 +17,58 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed'
         ]);
 
-        $User = User::create([
+        $user = User::create([
             'name' => $fields['name'],
             'email' => $fields['email'],
             'password' => bcrypt($fields['password'])
         ]);
 
-        $token = $User->createToken('authToken')->plainTextToken;
+        $token = $user->createToken('authToken')->plainTextToken;
 
         $response = [
-            'user' => $User,
+            'user' => $user,
             'token' => $token
         ];
 
         return response($response, 201);
+    }
+
+
+    public function login(Request $request){
+
+        $fields = $request->validate([
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:6'
+        ]);
+
+        // Validate email
+        $user = User::where('email', $fields['email'])->first();
+
+        // Validate password
+        if(!$user || !Hash::check($fields['password'], $user->password)){
+            return response(
+                [
+                    'message'=> 'Wrong credentials',
+                    'status' => '401'
+                ]
+            , 401);
+        }
+
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($response, 201);
+    }
+
+    public function logout(Request $request){
+        auth()->user()->tokens()->delete();
+        return [
+            'message' => 'Logged out',
+            'status' => Response::HTTP_OK
+        ]; 
     }
 }
