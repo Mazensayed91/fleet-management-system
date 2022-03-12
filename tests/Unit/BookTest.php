@@ -75,8 +75,8 @@ class BookTest extends TestCase
 
         // add headers to the request
         $response = $this->json('POST', '/api/book', [
-            'start_station' => 'Cairo',
-            'end_station' => 'Asyut',
+            'start_station' => 'Qena',
+            'end_station' => 'El-Mansoura',
             'trip_id' => 1
         ], [
             'Accept' => 'application/json',
@@ -104,7 +104,7 @@ class BookTest extends TestCase
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer ' . $token,
         ]);
-        // returns a message with "No available seats"
+        // returns a message with "No available trip id"
         $response->assertStatus(404);
     }
 }

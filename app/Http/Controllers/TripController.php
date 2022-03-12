@@ -98,10 +98,16 @@ class TripController extends Controller
         if(!$trip_id_exists){
             return response()->json(['error' => '404', 'message' => 'No trips found with this id, fetch trips to find a suitable trip id'], 404);
         }
-
+        
+        // set $trip to -1 if there is no avaialable trips
         $trip = array_column($available_trips->getData(), null, 'trip_id')[$request->trip_id] ?? -1;
-        //$trip = $available_trips->getData()[0];
 
+        // condition to handle no available seats condition
+        if(is_integer($trip)){
+            if($trip == -1){
+                return response()->json(['error' => '404', 'message' => 'No available seets'], 404);
+            }
+         }
         $trip_segments = CrossOverStation::where('trip_id', $trip -> trip_id)->get();
 
         // check available seats
