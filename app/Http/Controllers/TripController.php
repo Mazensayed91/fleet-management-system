@@ -102,13 +102,24 @@ class TripController extends Controller
         if($available_trips->getStatusCode() == 404){
             return response()->json(['error' => '404', 'message' => 'No trips found'], 404);
         }
-        $trip_id_exists = array_key_exists($request->trip_id, $available_trips->getData());
+
+        // replacing default keys with trip ids to make it easy to find the trip
+        $array_index = 0;
+        $available_trips_data = $available_trips->getData();
+        foreach($available_trips_data as $available_trip){
+            $available_trips_data[$available_trip->trip_id]= $available_trip;
+            unset($available_trips_data[$array_index]);
+            $array_index++;   
+        }
+
+        // check if the trip id is available
+        $trip_id_exists = array_key_exists($request->trip_id, $available_trips_data);
         if(!$trip_id_exists){
             return response()->json(['error' => '404', 'message' => 'No trips found with this id, fetch trips to find a suitable trip id'], 404);
         }
         
         // set $trip to -1 if there is no avaialable trips
-        $trip = array_column($available_trips->getData(), null, 'trip_id')[$request->trip_id] ?? -1;
+        $trip = array_column($available_trips_data, null, 'trip_id')[$request->trip_id] ?? -1;
 
         // condition to handle no available seats condition
         if(is_integer($trip)){
